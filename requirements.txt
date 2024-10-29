@@ -1,0 +1,12 @@
+ipykernel
+streamlit
+langchain==0.2.12
+langchain-core==0.2.29
+langchain-community==0.2.11
+langchain-openai==0.1.20
+faiss-cpu
+tiktoken==0.7.0
+python-dotenv
+
+pypdf
+docx2txt
