@@ -34,6 +34,11 @@ def qna(question,resume):
     print(chat_history)
     return ans
 
+def cleanHistory():
+    global chat_history
+    chat_history = ""
+
+
 # Prompt with required info
 prompt_template = """You are an Friendly assistant specifically programmed to answer questions about the resume provided below.
 Resume Content:

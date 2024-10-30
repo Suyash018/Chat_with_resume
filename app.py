@@ -3,7 +3,7 @@ import docx2txt
 from pypdf import PdfReader
 
 from function import resume_summarizer
-from chat_rag import qna
+from chat_rag import qna,cleanHistory
 
 
 # Mantain Sessions
@@ -36,6 +36,7 @@ if uploaded_files:
 
 # Generate Summary from LLM
 if st.button('Generate'):
+    cleanHistory()
     st.write("Loading... Loading... Loading...")
     st.session_state.more_than_2_pages = False
     st.session_state.Other_file_type = False
