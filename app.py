@@ -42,29 +42,38 @@ if st.button('Generate'):
     st.session_state.chat_start = False
     st.session_state.ans= None
     st.session_state.resume = None
-    
 
-    if uploaded_files.type=="application/pdf":
 
-        with open("temp.pdf", "wb") as f:
-            f.write(uploaded_files.getvalue())
-        reader = PdfReader('temp.pdf')
-        if len(reader.pages) > 2:
-            st.session_state.more_than_2_pages = True
-            st.write("Please upload resume limited to 2 pages")
-        elif len(reader.pages) == 2:
-            text = (reader.pages[0]).extract_text()+(reader.pages[1]).extract_text()
+    try:
+        # Check File type to convert to txt
+        if uploaded_files.type=="application/pdf":
+
+            with open("temp.pdf", "wb") as f:
+                f.write(uploaded_files.getvalue())
+            reader = PdfReader('temp.pdf')
+
+            # Resume length Should be less than 2
+            if len(reader.pages) > 2:
+                st.session_state.more_than_2_pages = True
+                st.write("Please upload resume limited to 2 pages")
+            elif len(reader.pages) == 2:
+                text = (reader.pages[0]).extract_text()+(reader.pages[1]).extract_text()
+            else:
+                text = (reader.pages[0]).extract_text()
+
+        # if file is docx type
+        elif uploaded_files.type=="application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            with open("temp.docx", "wb") as f:
+                f.write(uploaded_files.getvalue())
+            text = docx2txt.process("temp.docx")
+
+        # if Something else than return error
         else:
-            text = (reader.pages[0]).extract_text()
-
-    elif uploaded_files.type=="application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-        with open("temp.docx", "wb") as f:
-            f.write(uploaded_files.getvalue())
-        text = docx2txt.process("temp.docx")
-
-    else:
+            st.session_state.Other_file_type= True
+            st.write("Please upload PDF or Docx file format")
+    except Exception as e:
         st.session_state.Other_file_type= True
-        st.write("Please upload PDF or Docx file format")
+        st.write("File is corrupted. Please upload a good file")
 
         
     if st.session_state.Other_file_type == False and st.session_state.more_than_2_pages == False:
@@ -72,6 +81,8 @@ if st.button('Generate'):
         try:
             st.session_state.resume=text
             ans=resume_summarizer(text)
+
+            # If file is not resume error
             if ans["is_resume"] == False:
                 st.session_state.ans= None
                 st.session_state.resume=None
@@ -118,7 +129,7 @@ if  st.session_state.ans is not None:
     
     st.session_state.chat_start = True
 
-# Chatbot
+# Extra Feature a Simple Chatbot
 if st.session_state.chat_start == True:
     resume=st.session_state.resume
     with st.sidebar:

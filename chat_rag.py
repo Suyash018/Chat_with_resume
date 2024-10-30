@@ -14,12 +14,14 @@ chat_history = ""
 def qna(question,resume):
     global prompt_template,chat_history
 
+    #use replace as it is better than Using Partial Prompt 
     prompt2=prompt_template.replace("{Resume}",resume)
     prompt2=prompt2.replace("{Chat_history}",chat_history)
 
     chat_history=chat_history+"Human_Message: "+question+"\n"
 
     prompt =  ChatPromptTemplate.from_template(prompt2)
+    
     rag_chain = (
     {"Question": RunnablePassthrough()}
     | prompt
@@ -32,6 +34,7 @@ def qna(question,resume):
     print(chat_history)
     return ans
 
+# Prompt with required info
 prompt_template = """You are an Friendly assistant specifically programmed to answer questions about the resume provided below.
 Resume Content:
 {Resume}
@@ -57,7 +60,7 @@ For questions about the resume, you should:
 - Clarify if specific information is not available in the resume
 - Ask for clarification if the question is ambiguous
 
-Remember: Your sole purpose is to provide information about this specific resume. All other topics are strictly off-limits.
+Remember: Your sole purpose is to provide information about this specific resume , job reccommendation and eligibility for any job role for the resume. All other topics are strictly off-limits.
 
 Chat History:
 {Chat_history}
